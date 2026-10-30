@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kitchen Ledger — рецепты</title>
+  <style>
+    :root{--ink:#26332d;--muted:#738078;--line:#e3e9e4;--green:#286349;--pale:#f2f6f1;--cream:#faf9f4;--orange:#dd825b}
+    *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:15px/1.5 Inter,Segoe UI,Arial,sans-serif}
+    header{padding:18px clamp(20px,6vw,90px);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);background:#fff}
+    .brand{display:flex;gap:12px;align-items:center;font-weight:750;font-size:18px}.logo{width:38px;height:38px;border-radius:12px;background:var(--green);color:#fff;display:grid;place-items:center;font-size:20px}
+    nav{display:flex;gap:22px;color:var(--muted);font-size:14px}nav a{color:inherit;text-decoration:none}nav a:hover{color:var(--green)}
+    main{max-width:1160px;margin:0 auto;padding:44px 24px 70px}.intro{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:26px}.eyebrow{color:var(--green);font-size:12px;text-transform:uppercase;letter-spacing:.13em;font-weight:750}h1{font-size:clamp(30px,4vw,44px);line-height:1.1;margin:8px 0}p{margin:0;color:var(--muted)}
+    .btn{border:0;border-radius:10px;padding:11px 16px;background:var(--green);color:white;font-weight:650;cursor:pointer}.btn:hover{background:#1d4e38}.btn.secondary{background:#fff;color:var(--green);border:1px solid var(--line)}
+    .filters{background:#fff;border:1px solid var(--line);border-radius:16px;padding:17px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px;margin-bottom:26px;box-shadow:0 5px 18px #203a2810}
+    input,select,textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:11px 12px;background:#fff;color:var(--ink);font:inherit;outline:none}input:focus,select:focus,textarea:focus{border-color:#77a289;box-shadow:0 0 0 3px #28634912}
+    .section-title{display:flex;justify-content:space-between;align-items:center;margin:27px 0 14px}h2{margin:0;font-size:20px}.count{font-size:13px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:15px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:19px;transition:.18s}.card:hover{transform:translateY(-2px);box-shadow:0 9px 24px #203a2810}.card-top{display:flex;justify-content:space-between;gap:10px}.tag{background:var(--pale);color:var(--green);border-radius:99px;padding:4px 9px;font-size:12px;white-space:nowrap}.card h3{font-size:19px;margin:12px 0 5px}.meta{display:flex;gap:13px;color:var(--muted);font-size:13px}.ingredients{margin:15px 0 12px;padding-top:12px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:6px}.chip{font-size:12px;background:#f7f5ef;padding:4px 8px;border-radius:7px}.steps{font-size:13px;color:var(--muted);padding-left:19px;margin:9px 0 0}.empty{grid-column:1/-1;text-align:center;padding:44px 20px;border:1px dashed #cbd6ce;border-radius:14px;color:var(--muted)}
+    dialog{border:0;border-radius:18px;padding:0;width:min(620px,calc(100% - 28px));box-shadow:0 24px 80px #18261c40}dialog::backdrop{background:#17251dc0}.modal{padding:25px}.modal-head{display:flex;justify-content:space-between;align-items:start;margin-bottom:18px}.close{border:0;background:none;font-size:24px;cursor:pointer;color:var(--muted)}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{margin-bottom:13px}.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px}.span2{grid-column:span 2}.hint{font-size:12px;margin-top:5px}.form-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}.toast{position:fixed;right:22px;bottom:22px;background:#24372d;color:white;padding:13px 17px;border-radius:11px;box-shadow:0 8px 24px #0002;display:none;max-width:360px}.toast.error{background:#9b3d32}
+    @media(max-width:780px){.filters{grid-template-columns:1fr 1fr}.filters input:first-child{grid-column:span 2}.intro{align-items:start}.intro .btn{white-space:nowrap}nav{gap:12px}}@media(max-width:520px){header{padding:14px 18px}nav a:nth-child(2){display:none}main{padding:30px 16px}.intro{display:block}.intro .btn{margin-top:16px}.filters{grid-template-columns:1fr}.filters input:first-child{grid-column:auto}.form-grid{grid-template-columns:1fr}.span2{grid-column:auto}}
+  </style>
+</head>
+<body>
+  <header><div class="brand"><span class="logo">✳</span><span>Kitchen Ledger</span></div><nav><a href="#catalog">Рецепты</a><a href="#catalog">Ингредиенты</a><a href="/docs">API Docs ↗</a></nav></header>
+  <main>
+    <section class="intro"><div><div class="eyebrow">Ваша домашняя кулинарная книга</div><h1>Что приготовим сегодня?</h1><p>Находите рецепты по ингредиентам, времени и способу приготовления.</p></div><button class="btn" id="openCreate">＋ Новый рецепт</button></section>
+    <section class="filters" aria-label="Фильтры рецептов">
+      <input id="q" placeholder="⌕  Найти рецепт…" aria-label="Название">
+      <input id="category" placeholder="Категория" aria-label="Категория">
+      <input id="method" placeholder="Способ готовки" aria-label="Способ готовки">
+      <input id="maxMinutes" type="number" min="1" placeholder="До N минут" aria-label="Максимальное время">
+      <button class="btn secondary" id="search">Найти</button>
+      <input id="byIngredients" placeholder="Ингредиенты через запятую (все указанные)" aria-label="Ингредиенты">
+    </section>
+    <section id="catalog"><div class="section-title"><h2>Каталог рецептов</h2><span class="count" id="count"></span></div><div class="grid" id="recipes"><div class="empty">Загружаем рецепты…</div></div></section>
+  </main>
+  <dialog id="createDialog"><form class="modal" id="recipeForm">
+    <div class="modal-head"><div><div class="eyebrow">Коллекция рецептов</div><h2>Новый рецепт</h2></div><button type="button" class="close" id="closeDialog" aria-label="Закрыть">×</button></div>
+    <div class="form-grid">
+      <div class="field span2"><label for="title">Название</label><input id="title" required maxlength="160" placeholder="Например, овощной суп"></div>
+      <div class="field"><label for="newCategory">Категория</label><input id="newCategory" required placeholder="Супы"></div>
+      <div class="field"><label for="newMethod">Способ приготовления</label><input id="newMethod" required placeholder="Варка"></div>
+      <div class="field"><label for="minutes">Время, минут</label><input id="minutes" required type="number" min="1" value="30"></div>
+      <div class="field"><label for="servings">Порций</label><input id="servings" required type="number" min="1" value="2"></div>
+      <div class="field span2"><label for="newIngredients">Ингредиенты — по одному в строке: название | количество | единица | категория</label><textarea id="newIngredients" required rows="4" placeholder="Картофель | 300 | г | Овощи&#10;Соль | 1 | ч.л. | Специи"></textarea><div class="hint">Количество и единица измерения сохраняются вместе с рецептом.</div></div>
+      <div class="field span2"><label for="steps">Шаги приготовления — каждый с новой строки</label><textarea id="steps" required rows="4" placeholder="Нарезать овощи&#10;Варить до готовности"></textarea></div>
+    </div>
+    <div class="form-actions"><button type="button" class="btn secondary" id="cancelCreate">Отмена</button><button class="btn" type="submit">Сохранить рецепт</button></div>
+  </form></dialog>
+  <div class="toast" id="toast"></div>
+  <script>
+    const $ = id => document.getElementById(id);
+    const toast = (text,error=false) => { const t=$('toast');t.textContent=text;t.className='toast'+(error?' error':'');t.style.display='block';setTimeout(()=>t.style.display='none',3500); };
+    const escapeHtml = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    async function loadRecipes(){
+      const params=new URLSearchParams();
+      for(const [id,key] of [['q','q'],['category','category'],['method','method'],['maxMinutes','max_minutes'],['byIngredients','ingredients']]){const v=$(id).value.trim();if(v)params.set(key,v)}
+      const box=$('recipes');box.innerHTML='<div class="empty">Загружаем…</div>';
+      try{const r=await fetch('/recipes?'+params);if(!r.ok)throw new Error('Не удалось загрузить рецепты');const data=await r.json();$('count').textContent=`${data.length} ${data.length===1?'рецепт':'рецептов'}`;
+        box.innerHTML=data.length?data.map(recipe=>`<article class="card"><div class="card-top"><span class="tag">${escapeHtml(recipe.category)}</span><span class="tag">${escapeHtml(recipe.cooking_method)}</span></div><h3>${escapeHtml(recipe.title)}</h3><div class="meta"><span>◷ ${recipe.preparation_minutes} мин</span><span>♧ ${recipe.servings} порц.</span></div><div class="ingredients">${recipe.ingredients.map(x=>`<span class="chip">${escapeHtml(x.ingredient.name)} · ${x.amount} ${escapeHtml(x.ingredient.unit)}</span>`).join('')}</div><b>Приготовление</b><ol class="steps">${recipe.steps.map(s=>`<li>${escapeHtml(s.instruction)}</li>`).join('')}</ol></article>`).join(''):'<div class="empty">Рецепты не найдены. Создайте первый или измените фильтры.</div>';
+      }catch(e){box.innerHTML='<div class="empty">Не удалось связаться с API. Обновите страницу или проверьте запуск сервера.</div>';toast(e.message,true)}
+    }
+    $('search').onclick=loadRecipes;['q','category','method','maxMinutes','byIngredients'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter')loadRecipes()}));
+    const dialog=$('createDialog');$('openCreate').onclick=()=>dialog.showModal();$('closeDialog').onclick=$('cancelCreate').onclick=()=>dialog.close();
+    $('recipeForm').addEventListener('submit',async e=>{e.preventDefault();try{
+      const ingredients=$('newIngredients').value.trim().split('\n').filter(Boolean).map(line=>{const [name,amount,unit,category]=line.split('|').map(s=>s.trim());if(!name||!amount||!unit||!category)throw new Error('Проверьте формат ингредиентов: название | количество | единица | категория');return{name,amount:Number(amount),unit,category}});
+      const payload={title:$('title').value.trim(),category:$('newCategory').value.trim(),preparation_minutes:Number($('minutes').value),cooking_method:$('newMethod').value.trim(),servings:Number($('servings').value),ingredients,steps:$('steps').value.trim().split('\n').filter(Boolean)};
+      const r=await fetch('/recipes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const result=await r.json();if(!r.ok)throw new Error(result.detail||'Не удалось сохранить рецепт');
+      dialog.close();e.target.reset();$('minutes').value=30;$('servings').value=2;toast('Рецепт сохранён');loadRecipes();
+    }catch(err){toast(err.message,true)}});
+    loadRecipes();
+  </script>
+</body>
+</html>
